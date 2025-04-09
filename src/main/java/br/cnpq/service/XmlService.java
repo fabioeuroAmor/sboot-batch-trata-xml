@@ -2,6 +2,7 @@ package br.cnpq.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,6 +23,15 @@ public class XmlService {
     @Autowired
     RestTemplate restTemplate;
 
+    @Value("${app.directory}")
+    private String directory;
+
+    @Value("${app.filePath}")
+    private String filePath;
+
+    @Value("${app.url}")
+    private String url;
+
 
     public String processXmlFromDirectory(String fileName) {
         try {
@@ -33,9 +43,7 @@ public class XmlService {
                 fileName = fileName.replaceAll(".xml", " ");
             }
 
-            String directory = "C:\\\\Users\\\\Fabio Engineer\\\\Documents\\\\Novoxlm";
-            String filePath = "C:\\Users\\Fabio Engineer\\Documents\\NovoxlmUTF8\\" + fileName.trim() + "_UTF8.xml"; // Caminho do arquivo
-
+             filePath = filePath + fileName.trim() + "_UTF8.xml"; // Caminho do arquivo
 
             // Montar o caminho completo do arquivo XML
             File xmlFile = new File(directory, fileName.trim() + ".xml");
@@ -57,7 +65,6 @@ public class XmlService {
 
             writeStringToFile(xmlContent, filePath);
 
-            String url = "https://solr-novo-fomento.dev.cnpq.br/solr/curriculo/update";
             enviaAoSolr(xmlContent, url);
             log.info("Tentativa de indexação via serviço, enviada com sucesso!");
 

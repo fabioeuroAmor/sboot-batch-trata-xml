@@ -10,4 +10,12 @@ public class SbootBatchTrataXmlApplication {
 		SpringApplication.run(SbootBatchTrataXmlApplication.class, args);
 	}
 
+//	@Bean
+//	public CommandLineRunner commandLineRunner(SbootBatchTrataXmlApplication sbootBatchTrataXmlApplication) {
+//		return args -> {
+//			String fileName = "meuArquivo"; // Exemplo de nome de arquivo
+//			sbootBatchTrataXmlApplication.processFile(fileName); // Chamando o método de processamento
+//		};
+//	}
+
 }
