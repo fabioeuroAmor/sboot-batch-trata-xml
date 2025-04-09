@@ -1,5 +1,6 @@
 package br.cnpq.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Slf4j
 @Service
 public class XmlService {
 
@@ -27,7 +29,7 @@ public class XmlService {
             int indice = fileName.indexOf(".xml");
 
             if (indice != -1) {
-                System.out.println("A substring 'frase' começa no índice: " + indice);
+                log.info("Extenção .xml encontrada no nome do arquivo.");
                 fileName = fileName.replaceAll(".xml", " ");
             }
 
@@ -47,7 +49,7 @@ public class XmlService {
             String xmlContent = new String(Files.readAllBytes(xmlFile.toPath()), StandardCharsets.UTF_8);
 
             //ISO-8859-1
-            xmlContent = xmlContent.replaceAll("ISO-8859-1", "UTF-8");
+            xmlContent = xmlContent.replace("ISO-8859-1", "UTF-8");
 
 
             // Remover caracteres especiais
@@ -57,8 +59,7 @@ public class XmlService {
 
             String url = "https://solr-novo-fomento.dev.cnpq.br/solr/curriculo/update";
             enviaAoSolr(xmlContent, url);
-
-            System.out.println("Texto gravado com sucesso!");
+            log.info("Tentativa de indexação via serviço, enviada com sucesso!");
 
             return xmlContent;
         } catch (IOException e) {
@@ -73,7 +74,7 @@ public class XmlService {
         headers.setContentType(MediaType.APPLICATION_XML); // ou MediaType.TEXT_XML se necessário
 
         //Sem cabeçalho
-        xmlContent = xmlContent.replaceAll("(?s)\\s*<\\?xml version=\"1\\.0\" encoding=\"UTF-8\" standalone=\"yes\"\\?>\\s*", "");
+        //xmlContent = xmlContent.replaceAll("(?s)\\s*<\\?xml version=\"1\\.0\" encoding=\"UTF-8\" standalone=\"yes\"\\?>\\s*", "");
 
         // Criar a entidade com o corpo e os cabeçalhos
         HttpEntity<String> requestEntity = new HttpEntity<>(xmlContent.trim(), headers);
@@ -82,10 +83,10 @@ public class XmlService {
         try {
             String response = restTemplate.postForObject(url, requestEntity, String.class);
             // Processar a resposta, se necessário
-            System.out.println("Resposta do Solr: " + response);
+            log.info("Resposta do Solr:" + response);
         } catch (Exception e) {
             // Tratar exceções
-            System.err.println("Erro ao enviar solicitação para o Solr: " + e.getMessage());
+            log.error("Erro ao enviar solicitação para o Solr: " + e.getMessage());
         }
     }
 
